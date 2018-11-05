@@ -38,7 +38,11 @@ public class Vektor implements Serializable{
      * Vektörün alacağı Z koordinat değeri.
      */
     public double z;
-
+    
+    /**
+     * Bellekte yer kaplamaz, sadece {@code Vektor} nesnesini {@code double[]}
+     * listeye dönüştürürken çağırılır.
+     */ 
     public transient double[] array;
     
     /**
@@ -361,6 +365,14 @@ public class Vektor implements Serializable{
         return this;
     }
     
+    /**
+     * Bu metot diğer static cikar() metodunu belirtilen parametrelerde
+     * tekrar çağırır.
+     * 
+     * @param v1    herhangi bir {@code Vektor} değişkeni
+     * @param v2    herhangi bir {@code Vektor} değişkeni
+     * @return  iki vektörün farkını {@code Vektor} şeklinde
+     */
     public static Vektor cikar(Vektor v1, Vektor v2){
         return cikar(v1, v2, null);
     }

@@ -81,6 +81,13 @@ public class Cebir {
         return sum;
     }
     
+    /**
+     * Girilen açıyı öncelikle metot içinde radyana dönüştürür,
+     * daha sonra yaklaşım algoritmasıyla kosinüs değerini bulur.
+     * 
+     * @param aci istenen açı
+     * @return o açının cosinüs değeri
+     */
     public static double cos(double aci){
         double sum = 0d;
         
