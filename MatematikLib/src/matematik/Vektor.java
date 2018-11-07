@@ -84,6 +84,24 @@ public class Vektor implements Serializable{
     }
     
     /**
+     * 
+     * @return 
+     */
+    public int boyut(){
+        int boyut = 0;
+        if((this.x != 0 && this.y == 0 && this.z == 0) || (this.x == 0 && this.y != 0 && this.z == 0) || this.x == 0 && this.y == 0 && this.z != 0){
+            boyut = 1;
+        }
+        if((this.x != 0 && this.y != 0 && this.z == 0) || (this.x == 0 && this.y != 0 && this.z != 0) || this.x != 0 && this.y == 0 && this.z != 0){
+            boyut = 2;
+        }
+        if(this.x != 0 && this.y != 0 && this.z != 0){
+            boyut = 3;
+        }
+        
+        return boyut;
+    }
+    /**
      * Parametreye girilen x değerini çağırılan vektöre tanımlar.
      * 
      * @param x  vektore atanması istenen x değeri
@@ -420,6 +438,7 @@ public class Vektor implements Serializable{
     
     /**
      * Yeni bir nesne oluşturmadan sınıfın metodu üzerinden çağırılır.
+     * Parametrelere girilen iki vektör arası uzaklığı bulur.
      * 
      * @usage: Vektor.uzaklik(Vektor1, Vektor2)
      * @param v1    herhangi bir {@code Vektör} değişkeni
@@ -434,9 +453,181 @@ public class Vektor implements Serializable{
         return Cebir.karekok(ux*ux + uy*uy + uz*uz);
     }
     
+    /**
+     * Çağırılan vektörü, parametrede girilen değer ile çarpar.
+     * 
+     * @param sayi  vektörün çarpılması istenen değer
+     * @return  işlemin sonucu vektör, {@code Vektor} şeklinde
+     */
+    public Vektor carp(double sayi) {
+        x *= sayi;
+        y *= sayi;
+        z *= sayi;
+        return this;
+    }
+    
+    /**
+     * Parametreye girilen vektörü, yine parametrede girilen değer ile çarpar.
+     * Ve sonucu yeni, kaydı tutulmayan bir {@code Vektor} nesnesine atar.
+     * 
+     * 
+     * @param v  herhangi bir {@code Vektör} değişkeni
+     * @param sayi  çarpılması istenen miktar
+     * @return   işlemin sonucu olan {@code Vektor}
+     */
+    public static Vektor mult(Vektor v, double sayi) {
+        return carp(v, sayi, null);
+    }
+    
+    /**
+     * Parametreye girilen vektörü, yine parametrede girilen değer ile çarpar.
+     * <p>Eğer {@code hedef} paremetresi null ise, sonucu yeni bir vektör olarak
+     * döndürür, kaydını tutmaz.
+     * <p>Eğer {@code hedef} paremetresinde Bir {@code Vektor} nesnesi varsa,
+     * işlemin sonucunu o vektöre atar.
+     * 
+     * @param v  herhangi bir {@code Vektör} değişkeni
+     * @param sayi  çarpılması istenen miktar
+     * @param hedef sonucun aktarılması istenen {@code Vektor}
+     * @return   işlemin sonucu olan {@code Vektor}
+     */
+    public static Vektor carp(Vektor v, double sayi, Vektor hedef) {
+        if (hedef == null) {
+          hedef = new Vektor(v.x*sayi, v.y*sayi, v.z*sayi);
+        } else {
+          hedef.ekle(v.x*sayi, v.y*sayi, v.z*sayi);
+        }
+        return hedef;
+    }
+    
+    /**
+     * Çağırılan vektörü, parametrede girilen değere böler.
+     * 
+     * @param sayi  vektörün bölünmesi istenen değer
+     * @return  işlemin sonucu vektör, {@code Vektor} şeklinde
+     */
+    public Vektor bol(double sayi) {
+        x /= sayi;
+        y /= sayi;
+        z /= sayi;
+        return this;
+    }
+    
+    /**
+     * Parametreye girilen vektörü, yine parametrede girilen değere böler.
+     * Ve sonucu yeni, kaydı tutulmayan bir {@code Vektor} nesnesine atar.
+     * 
+     * 
+     * @param v  herhangi bir {@code Vektör} değişkeni
+     * @param sayi  bölünmesi istenen miktar
+     * @return   işlemin sonucu olan {@code Vektor}
+     */
+    public static Vektor bol(Vektor v, double sayi) {
+        return bol(v, sayi, null);
+    }
+    
+    /**
+     * Parametreye girilen vektörü, yine parametrede girilen değere böler.
+     * <p>Eğer {@code hedef} paremetresi null ise, sonucu yeni bir vektör olarak
+     * döndürür, kaydını tutmaz.
+     * <p>Eğer {@code hedef} paremetresinde Bir {@code Vektor} nesnesi varsa,
+     * işlemin sonucunu o vektöre atar.
+     * 
+     * @param v  herhangi bir {@code Vektör} değişkeni
+     * @param sayi  bölünmesi istenen miktar
+     * @param hedef sonucun aktarılması istenen {@code Vektor}
+     * @return   işlemin sonucu olan {@code Vektor}
+     */
+    public static Vektor bol(Vektor v, double sayi, Vektor hedef) {
+        if (hedef == null) {
+            hedef = new Vektor(v.x/sayi, v.y/sayi, v.z/sayi);
+        } else {
+            hedef.ekle(v.x/sayi, v.y/sayi, v.z/sayi);
+        }
+        return hedef;
+    }
+    
+    /**
+     * Çağırılan vektörü birim vektör yapar
+     * [1]
+     * [1]
+     * [1]
+     * 
+     * @return çağırılmış vektörün birim vektörü 
+     */
+    public Vektor birimVektor() {
+        double uzn = uzunluk();
+        if (uzn != 0 && uzn != 1) {
+          bol(uzn);
+        }
+        return this;
+    }
+    
+    /**
+     * @param v    herhangi bir {@code Vektör} değişkeni
+     * @return  iki vektörün çapraz çarpım sonucu,{@code Vektor} şeklinde
+     */
+    public Vektor caprazCarp(Vektor v) {
+        return caprazCarp(v, null);
+    }
+    
+    /**
+     * @param v    herhangi bir {@code Vektör} değişkeni
+     * @param hedef sonucun aktarılması istenen vektör
+     * @return  iki vektörün çapraz çarpım sonucu,{@code Vektor} şeklinde
+     */
+    public Vektor caprazCarp(Vektor v, Vektor hedef) {
+        double caprazX = y * v.z - v.y * z;
+        double caprazY = z * v.x - v.z * x;
+        double caprazZ = x * v.y - v.x * y;
+
+        if (hedef == null) {
+          hedef = new Vektor(caprazX, caprazY, caprazZ);
+        } else {
+          hedef.ekle(caprazX, caprazY, caprazZ);
+        }
+        return hedef;
+    }    
+    
+    /**
+     * @param v1    herhangi bir {@code Vektör} değişkeni
+     * @param v2    herhangi bir {@code Vektör} değişkeni
+     * @param hedef sonucun aktarılması istenen vektör
+     * @return  iki vektörün çapraz çarpım sonucu,{@code Vektor} şeklinde
+     */
+    public static Vektor caprazCarp(Vektor v1, Vektor v2, Vektor hedef) {
+        double caprazX = v1.y * v2.z - v2.y * v1.z;
+        double caprazY = v1.z * v2.x - v2.z * v1.x;
+        double caprazZ = v1.x * v2.y - v2.x * v1.y;
+
+        if (hedef == null) {
+          hedef = new Vektor(caprazX, caprazY, caprazZ);
+        } else {
+          hedef.ekle(caprazX, caprazY, caprazZ);
+        }
+        return hedef;
+    }
+  
+    /**
+     * @param hedef  birim vektöre dönüştürülecek vektör
+     * @return  vektörün birim hali [1,1,1],{@code Vektor}
+     */
+    public Vektor birimVektor(Vektor hedef) {
+        if (hedef == null) {
+          hedef = new Vektor();
+        }
+        double uzn = uzunluk();
+        if (uzn > 0) {
+          hedef.ekle(x/uzn, y/uzn, z/uzn);
+        } else {
+          hedef.ekle(x, y, z);
+        }
+        return hedef;
+    }
+    
     @Override
     public String toString() {
-      return "[ " + x + ", " + y + ", " + z + " ]";
+        return "[ " + x + ", " + y + ", " + z + " ]";
     }
     
     /**

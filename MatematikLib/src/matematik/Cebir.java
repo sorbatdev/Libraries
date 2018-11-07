@@ -70,6 +70,7 @@ public class Cebir {
             
             double radyan = sonuc;
         
+            //Taylor serisi
         for (int i = 1; i < 10; i++){
             if(i%2 == 0){
                 sum -= us(radyan, 2*i-1)/faktoriyel(2*i-1);
@@ -104,6 +105,7 @@ public class Cebir {
             
             double radyan = sonuc;
             
+            //Taylor serisi
             for (int i = 0; i < 10; i++){
                 if(i%2 == 0){
                     sum += us(radyan, 2*i)/faktoriyel(2*i);
@@ -334,7 +336,7 @@ public class Cebir {
      * @return girilen sayının karekökü
      */
     public static double karekok(double sayi){
-        return us(sayi, 1/2);
+        return StrictMath.sqrt(sayi);
     }
     
     /**
@@ -348,7 +350,7 @@ public class Cebir {
      * @return girilen sayının karekökü
      */
     public static double kupkok(double sayi){
-        return us(sayi, 1/3);
+        return StrictMath.cbrt(sayi);
     }
     
     /**
@@ -405,5 +407,43 @@ public class Cebir {
         double tavan = StrictMath.ceil(sayi);
         
         return (sayi < taban+0.5)? taban: tavan;
+    }
+    
+    /**
+     * @usage: <ul><li>float[] kume = {1, 5, 8, 10};
+     * <li>Cebir.ort(kume);
+     * </ul>
+     * @param kume aritmetik ortlaması alınacak sayılar kümesi
+     * @return  sayıların aritmetik ortlaması
+     */
+    public static float ort(float[] kume){
+        float artToplam = 0.0f;
+        for(float eleman: kume){
+            artToplam += eleman;
+        }
+        return artToplam/kume.length;
+    }
+    
+    public static float gOrt(float[] kume){
+        float carpim = 1;
+        for (float eleman: kume){
+            carpim *= eleman;
+        }
+        return (float)kok(carpim, 1/kume.length);
+    }
+    /**
+     * @usage: <ul><li>float[] kume = {1, 5.7, 8.24};
+     * <li>Cebir.stSapma(kume);
+     * </ul>
+     * @param kume standart sapması alınacak sayılar kümesi
+     * @return sayıların standart sapması
+     */
+    public static float stSapma(float[] kume){
+        float aOrt = ort(kume);
+        float sTop = 0;
+        for(float eleman: kume){
+            sTop += us(eleman-aOrt, 2);
+        }
+        return (float) karekok(sTop/(kume.length-1));
     }
 }

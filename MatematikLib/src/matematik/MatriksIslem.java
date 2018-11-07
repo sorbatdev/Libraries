@@ -5,24 +5,62 @@
  */
 package matematik;
 
+import static matematik.Cebir.cos;
+import static matematik.Cebir.sin;
 /**
  *
  * @author kayra
  */
 public class MatriksIslem {
-    private boolean ucBoyutMu;
+
+    private static boolean ucBoyutMu;
+    public double[][] ROTASYON_Z,ROTASYON_X,ROTASYON_Y;
     
-    public double[][] vecToMatrix(Vektor v){
-        double[][] m = new double[3][1];
+    public MatriksIslem(double aci){
+        ROTASYON_Z = new double[][]{
+            { cos(aci), -sin(aci), 0},
+            { sin(aci),  cos(aci), 0},
+            {0, 0, 1}
+        };
+        ROTASYON_X = new double[][]{
+            {1, 0, 0},
+            {0, cos(aci), -sin(aci)},
+            {0, sin(aci),  cos(aci)}
+        };
+        ROTASYON_Y = new double[][]{		
+            { cos(aci), 0, -sin(aci)},
+            {0, 1, 0},
+            { sin(aci), 0, cos(aci)}			
+        };
+    }
+    
+    public static double[][] vecToMatrix(Vektor v){
+        double[][] m = null;
         
-        m[0][0] = v.x;
-        m[1][0] = v.y;
-        m[2][0] = v.z;
+        if (v.boyut() == 3){
+            m = new double[3][1];
+            
+            m[0][0] = v.x;
+            m[1][0] = v.y;
+            m[2][0] = v.z;
+            
+        }
+        if (v.boyut() == 2){
+            m = new double[2][1];
+
+            m[0][0] = v.x;
+            m[1][0] = v.y;
+        }
+        if (v.boyut() == 1){
+            m = new double[1][1];
+
+            m[0][0] = v.x;
+        }
         
         return m;
     }
     
-    public String matriksYazdir(double[][] matriks){
+    public static String matriksYazdir(double[][] matriks){
         int sutun = matriks[0].length;
         int satir = matriks.length;
         System.out.println(satir + "x" + sutun);
@@ -35,36 +73,37 @@ public class MatriksIslem {
         return null;
     }
             
-    public Vektor matrixToVec(double[][] matriks){
+    public static Vektor matrixToVec(double[][] matriks){
         Vektor vektor = new Vektor();
-        if (!ucBoyutMu){
+        if(!ucBoyutMu){
             vektor.x = matriks[0][0];
-            vektor.y = matriks[1][0];
+            if (matriks.length > 1){
+                vektor.y = matriks[1][0];
+            }
             if (matriks.length > 2){
                 vektor.z = matriks[2][0];
             }
-        }else {
         }
         return vektor;
     }
-    public Vektor matriksCarpim(double[][] a, Vektor b){
+    public static Vektor matriksCarpim(double[][] a, Vektor b){
         double[][] m = vecToMatrix(b);
         return matrixToVec(matriksCarpim(a,m));
     }
     
-    public Vektor matriksToplam(double[][] a, Vektor b){
+    public static Vektor matriksToplam(double[][] a, Vektor b){
         ucBoyutMu = false;
         double[][] m = vecToMatrix(b);
         return matrixToVec(matriksToplam(a,m));
     }
     
-    public Vektor matriksCikarma(double[][] a, Vektor b){
+    public static Vektor matriksCikarma(double[][] a, Vektor b){
         ucBoyutMu = false;
         double[][] m = vecToMatrix(b);
         return matrixToVec(matriksCikarma(a,m));
     }
     
-    public double[][] matriksCikarma(double[][] a, double[][] b){
+    public static double[][] matriksCikarma(double[][] a, double[][] b){
         int sutunA = a[0].length;
         int satirA = a.length;
         int sutunB = b[0].length;
@@ -85,7 +124,8 @@ public class MatriksIslem {
         }
         return sonuc;
     }
-    public double[][] matriksToplam(double[][] a, double[][] b){
+    
+    public static double[][] matriksToplam(double[][] a, double[][] b){
         int sutunA = a[0].length;
         int satirA = a.length;
         int sutunB = b[0].length;
@@ -105,9 +145,8 @@ public class MatriksIslem {
            return null; 
         }
         return sonuc;
-
     }
-    public double[][] matriksCarpim(double[][] a, double[][] b){
+    public static double[][] matriksCarpim(double[][] a, double[][] b){
         int sutunA = a[0].length;
         int satirA = a.length;
         int sutunB = b[0].length;
