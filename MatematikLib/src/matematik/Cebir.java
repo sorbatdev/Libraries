@@ -13,6 +13,12 @@
  */
 package matematik;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * {@code Cebir} sınıfı, basit sayısal işlemleri gerçekleştirebilmek için yapmış olduğum
  * bir kütüphanedir.
@@ -332,11 +338,98 @@ public class Cebir {
      * <ul><li>Eğer girdi sayı değilse veya sayı sıfırdan küçükse 
      * NaN döner.
      * </ul>
-     * @param sayi karekökü alınacak sayı
+     * @param num karekökü alınacak sayı
      * @return girilen sayının karekökü
      */
-    public static double karekok(double sayi){
-        return StrictMath.sqrt(sayi);
+    public static double karekok(double num){
+        List<String> sayi = Cebir.ciftAyir(num);
+
+        double pairNum = Double.parseDouble(sayi.get(0));
+        double closestNum = 0;
+        double closestPerfSq = 0;
+        double nextCalc;
+
+        for (int i = 9; 0 <= i; i--) {
+            closestPerfSq = Cebir.us(i, 2);
+            if (closestPerfSq <= pairNum) {
+                closestNum = i;
+                sayi.remove(0);
+                break;
+            }
+        }
+
+        double araSayi = pairNum - closestPerfSq;
+        for (int j = 0; j <= 13; j++) {
+            if (!sayi.isEmpty()) {
+                araSayi = araSayi * 100 + Double.parseDouble(sayi.get(0));
+            } else {
+                araSayi = araSayi * 100;
+            }
+            for (int i = 9; 0 <= i; i--) {
+                nextCalc = (closestNum * 20 + i) * i;
+                
+                if (nextCalc <= araSayi) {
+
+                    closestNum = closestNum * 10 + i;
+
+                    araSayi = araSayi - nextCalc;
+                    
+                    if (!sayi.isEmpty()) {
+                        sayi.remove(0);
+                    }
+                    break;
+                }
+            }
+        }
+        BigDecimal b = new BigDecimal(closestNum);
+        
+        String toStr = b.toString();
+
+        char[] toChr = toStr.toCharArray();
+
+        boolean done = false;
+        LinkedList<Character> chr = new LinkedList<>();
+
+        chr.add(0, 'a');
+        int recordComma = 0;
+        int currentNum = 0;
+        
+        for (int k = 0; k < toChr.length; k++) {
+
+            currentNum = (int) (currentNum * 10 + (Integer.parseInt(Character.toString(toChr[k]))));
+
+            if (currentNum * currentNum > num && !done) {
+                chr.add(k, '.');
+                chr.add(k + 1, toChr[k]);
+                recordComma = k;
+                done = true;
+
+            } else if (chr.get(recordComma) == '.') {
+                chr.add(k + 1, toChr[k]);
+
+            } else {
+                if (chr.get(0) == 'a') {
+                    chr.remove(0);
+                }
+                chr.add(k, toChr[k]);
+
+            }
+        }
+
+        char[] yeni = new char[toChr.length + 1];
+        Iterator it = chr.iterator();
+
+        int index = 0;
+        while (it.hasNext()) {
+            yeni[index] = (char) it.next();
+
+            index++;
+        }
+
+        String s = new String(yeni);
+        Double d = Double.parseDouble(s);
+        
+        return d;
     }
     
     /**
@@ -416,20 +509,25 @@ public class Cebir {
      * @param kume aritmetik ortlaması alınacak sayılar kümesi
      * @return  sayıların aritmetik ortlaması
      */
-    public static float ort(float[] kume){
-        float artToplam = 0.0f;
-        for(float eleman: kume){
+    public static double ort(double[] kume){
+        double artToplam = 0.0f;
+        for(double eleman: kume){
             artToplam += eleman;
         }
         return artToplam/kume.length;
     }
     
-    public static float gOrt(float[] kume){
-        float carpim = 1;
-        for (float eleman: kume){
+    /**
+     * 
+     * @param kume  geometrik ortalaması alınması istenen sayı kümesi
+     * @return verilen kümenin geometrik ortalaması
+     */
+    public static double gOrt(double[] kume){
+        double carpim = 1;
+        for (double eleman: kume){
             carpim *= eleman;
         }
-        return (float)kok(carpim, 1/kume.length);
+        return kok(carpim, 1/kume.length);
     }
     /**
      * @usage: <ul><li>float[] kume = {1, 5.7, 8.24};
@@ -438,12 +536,185 @@ public class Cebir {
      * @param kume standart sapması alınacak sayılar kümesi
      * @return sayıların standart sapması
      */
-    public static float stSapma(float[] kume){
-        float aOrt = ort(kume);
-        float sTop = 0;
-        for(float eleman: kume){
+    public static double stSapma(double[] kume){
+        double aOrt = ort(kume);
+        double sTop = 0;
+        for(double eleman: kume){
             sTop += us(eleman-aOrt, 2);
         }
-        return (float) karekok(sTop/(kume.length-1));
+        return karekok(sTop/(kume.length-1));
+    }
+    
+    /**
+     * Parametreye girilen double değerini sayı çiftlerine ayırır.
+     * 
+     * @param sayi çiftlere ayrılması istenen sayı
+     * @return  çiftlere ayrılmış sayının liste hali
+     */
+    public static List<String> ciftAyir(double sayi){
+        
+        List<String> pairs;
+        pairs = new ArrayList<>();
+          
+        boolean tek = false;
+        
+        String number = String.valueOf(sayi);
+        String strNumber = Double.toString(sayi);
+        
+        String[][] spt = new String[1][2];
+        spt[0] = strNumber.split("\\.");
+        
+        String[] tamKisim = spt[0][0].split("(?!^)");
+        String[] ondalikKisim = spt[0][1].split("(?!^)");
+        
+        if(tamKisim.length%2 == 0 && ondalikKisim.length%2 == 1){
+            tek = true;
+        }
+        
+        String[] seperated = number.split("(?!^)");
+        
+        if(seperated.length%2 == 0){
+            if(!tek){
+                String pair;
+                String lonePair = seperated[0];
+                pairs.add(lonePair);
+
+                for(int i = 1 ; i<seperated.length; i+=2){
+                    String pair1 = "";
+                    String pair2 = "";
+                    if(!".".equals(seperated[i]) && ".".equals(seperated[i+1])){
+                        pair1 = seperated[i];
+                        pair2 = seperated[i+2];
+
+                        if(!"".equals(pair1) && !"".equals(pair2)){
+                            pair = pair1 + pair2;
+                            pairs.add(pair);
+                        }
+
+                        i++;
+
+                    }else if(!".".equals(seperated[i]) && !".".equals(seperated[i+1])){
+                        pair1 = seperated[i];
+                        pair2 = seperated[i+1];                   
+                        if(!"".equals(pair1) && !"".equals(pair2)){
+                            pair = pair1 + pair2;
+                            pairs.add(pair);
+                        }
+                    }
+                    else{
+                        i--;
+                    }
+
+                }
+            }else{
+                
+                String pair;
+                
+                for(int i = 0 ; i<seperated.length; i+=2){
+                    String pair1 = "";
+                    String pair2 = "";
+                    try{
+                        if(".".equals(seperated[i]) && !".".equals(seperated[i+1])){
+                            i++;
+                            pair1 = seperated[i];
+
+                            if(seperated.length >= i+3){
+                                pair2 = seperated[i+1];
+                            }else{
+                                pair2 = "0";
+                            }
+
+                            if(!"".equals(pair1) && !"".equals(pair2)){
+                                pair = pair1 + pair2;
+                                pairs.add(pair);
+                            }
+
+                        }else if(!".".equals(seperated[i]) && !".".equals(seperated[i+1])){
+                            pair1 = seperated[i];
+                            pair2 = seperated[i+1];
+
+                            if(!"".equals(pair1) && !"".equals(pair2)){
+                                pair = pair1 + pair2;
+                                pairs.add(pair);
+                            }
+                        }
+                    }catch(ArrayIndexOutOfBoundsException e){
+                        pair1 = seperated[i];
+                        pair2 = "0";
+                        
+                        if(!"".equals(pair1) && !"".equals(pair2)){
+                            pair = pair1 + pair2;
+                            pairs.add(pair);
+                        }
+                    }
+                }
+            }
+        }else{
+            
+                String pair;
+
+                boolean lonely1 = false;
+                boolean lonely2 = false;
+                boolean bitti = false;
+
+                for(int i = 0 ; i < seperated.length; i+=2){
+                    String pair1 = "";
+                    String pair2 = "";
+                    if(".".equals(seperated[i])){
+                        i--;
+                    }
+                    else if(".".equals(seperated[i+1])){
+                        if(seperated.length == 3){
+                            if(!lonely2) {
+                                String lonePair = seperated[0];
+                                pairs.add(lonePair);
+                                lonely2 = true;
+                            }
+                            
+                            pair1 = seperated[i+2];
+                            pair2 = "0";
+
+                            if (!"".equals(pair1) && !"".equals(pair2)) {
+                                pair = pair1 + pair2;
+                                pairs.add(pair);
+                                break;
+                            }
+                                
+                        }else{
+                            pair1 = seperated[i];
+                            pair2 = seperated[i+2];
+
+                            if(!"".equals(pair1) && !"".equals(pair2)){
+                                pair = pair1 + pair2;
+                                pairs.add(pair);
+                            }
+                        }
+                    }
+                    else{
+
+                        if(!lonely1) {
+                            String lonePair = seperated[0];
+                            pairs.add(lonePair);
+                            lonely1 = true;
+                        }
+
+                        pair1 = seperated[i+1];
+                        pair2 = seperated[i+2];
+
+                        if (!"".equals(pair1) && !"".equals(pair2)) {
+                            pair = pair1 + pair2;
+                            pairs.add(pair);
+                        }
+
+                        if(".".equals(seperated[i+3])){
+                            bitti=true;
+                        }
+
+                        if(bitti) break;
+                    }
+
+                }
+        }   
+        return pairs;
     }
 }
