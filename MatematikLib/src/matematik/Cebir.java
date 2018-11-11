@@ -15,6 +15,7 @@ package matematik;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -342,8 +343,8 @@ public class Cebir {
      * @return girilen sayının karekökü
      */
     public static double karekok(double num){
+        
         List<String> sayi = Cebir.ciftAyir(num);
-
         double pairNum = Double.parseDouble(sayi.get(0));
         double closestNum = 0;
         double closestPerfSq = 0;
@@ -357,7 +358,7 @@ public class Cebir {
                 break;
             }
         }
-
+        
         double araSayi = pairNum - closestPerfSq;
         for (int j = 0; j <= 13; j++) {
             if (!sayi.isEmpty()) {
@@ -373,6 +374,7 @@ public class Cebir {
                     closestNum = closestNum * 10 + i;
 
                     araSayi = araSayi - nextCalc;
+
                     
                     if (!sayi.isEmpty()) {
                         sayi.remove(0);
@@ -386,37 +388,42 @@ public class Cebir {
         String toStr = b.toString();
 
         char[] toChr = toStr.toCharArray();
-
+        char[] decimal = toStr.toCharArray();
+        if(num > 0 && num < 1){
+            decimal = new char[toChr.length+1];
+            System.arraycopy(toChr, 0, decimal, 1, toChr.length);
+            decimal[0] = '0';
+        }
         boolean done = false;
         LinkedList<Character> chr = new LinkedList<>();
 
         chr.add(0, 'a');
         int recordComma = 0;
         int currentNum = 0;
-        
-        for (int k = 0; k < toChr.length; k++) {
 
-            currentNum = (int) (currentNum * 10 + (Integer.parseInt(Character.toString(toChr[k]))));
+        for (int k = 0; k < decimal.length; k++) {
+
+            currentNum = (int) (currentNum * 10 + (Integer.parseInt(Character.toString(decimal[k]))));
 
             if (currentNum * currentNum > num && !done) {
                 chr.add(k, '.');
-                chr.add(k + 1, toChr[k]);
+                chr.add(k + 1, decimal[k]);
                 recordComma = k;
                 done = true;
 
             } else if (chr.get(recordComma) == '.') {
-                chr.add(k + 1, toChr[k]);
+                chr.add(k + 1, decimal[k]);
 
             } else {
                 if (chr.get(0) == 'a') {
                     chr.remove(0);
                 }
-                chr.add(k, toChr[k]);
+                chr.add(k, decimal[k]);
 
             }
         }
 
-        char[] yeni = new char[toChr.length + 1];
+        char[] yeni = new char[decimal.length + 1];
         Iterator it = chr.iterator();
 
         int index = 0;
@@ -556,7 +563,8 @@ public class Cebir {
         List<String> pairs;
         pairs = new ArrayList<>();
           
-        boolean tek = false;
+        boolean ondalikTek = false;
+        boolean tamTek = false;
         
         String number = String.valueOf(sayi);
         String strNumber = Double.toString(sayi);
@@ -567,154 +575,60 @@ public class Cebir {
         String[] tamKisim = spt[0][0].split("(?!^)");
         String[] ondalikKisim = spt[0][1].split("(?!^)");
         
-        if(tamKisim.length%2 == 0 && ondalikKisim.length%2 == 1){
-            tek = true;
+        if(ondalikKisim.length%2 == 1) ondalikTek = true;
+        if(tamKisim.length%2 == 1) tamTek = true;
+        
+        String[] separated = number.split("(?!^)");
+        String[] newSep;
+        
+        if(ondalikTek){
+            newSep = new String[separated.length+1];
+            System.arraycopy(separated, 0, newSep, 0, separated.length);
+            newSep[separated.length] = "0";
+        }else{
+            newSep = new String[separated.length];
+            System.arraycopy(separated, 0, newSep, 0, separated.length);
         }
         
-        String[] seperated = number.split("(?!^)");
-        
-        if(seperated.length%2 == 0){
-            if(!tek){
-                String pair;
-                String lonePair = seperated[0];
-                pairs.add(lonePair);
-
-                for(int i = 1 ; i<seperated.length; i+=2){
-                    String pair1 = "";
-                    String pair2 = "";
-                    if(!".".equals(seperated[i]) && ".".equals(seperated[i+1])){
-                        pair1 = seperated[i];
-                        pair2 = seperated[i+2];
-
-                        if(!"".equals(pair1) && !"".equals(pair2)){
-                            pair = pair1 + pair2;
-                            pairs.add(pair);
-                        }
-
-                        i++;
-
-                    }else if(!".".equals(seperated[i]) && !".".equals(seperated[i+1])){
-                        pair1 = seperated[i];
-                        pair2 = seperated[i+1];                   
-                        if(!"".equals(pair1) && !"".equals(pair2)){
-                            pair = pair1 + pair2;
-                            pairs.add(pair);
-                        }
-                    }
-                    else{
-                        i--;
-                    }
-
-                }
-            }else{
-                
-                String pair;
-                
-                for(int i = 0 ; i<seperated.length; i+=2){
-                    String pair1 = "";
-                    String pair2 = "";
-                    try{
-                        if(".".equals(seperated[i]) && !".".equals(seperated[i+1])){
-                            i++;
-                            pair1 = seperated[i];
-
-                            if(seperated.length >= i+3){
-                                pair2 = seperated[i+1];
-                            }else{
-                                pair2 = "0";
-                            }
-
-                            if(!"".equals(pair1) && !"".equals(pair2)){
-                                pair = pair1 + pair2;
-                                pairs.add(pair);
-                            }
-
-                        }else if(!".".equals(seperated[i]) && !".".equals(seperated[i+1])){
-                            pair1 = seperated[i];
-                            pair2 = seperated[i+1];
-
-                            if(!"".equals(pair1) && !"".equals(pair2)){
-                                pair = pair1 + pair2;
-                                pairs.add(pair);
-                            }
-                        }
-                    }catch(ArrayIndexOutOfBoundsException e){
-                        pair1 = seperated[i];
-                        pair2 = "0";
-                        
-                        if(!"".equals(pair1) && !"".equals(pair2)){
-                            pair = pair1 + pair2;
-                            pairs.add(pair);
-                        }
-                    }
-                }
+        if(newSep.length%2 == 1){
+            for(int i = 0; i < (newSep.length-1)/2; i++){
+                pairs.add("a");
             }
         }else{
-            
-                String pair;
-
-                boolean lonely1 = false;
-                boolean lonely2 = false;
-                boolean bitti = false;
-
-                for(int i = 0 ; i < seperated.length; i+=2){
-                    String pair1 = "";
-                    String pair2 = "";
-                    if(".".equals(seperated[i])){
-                        i--;
+            for(int i = 0; i < newSep.length/2; i++){
+                pairs.add("a");
+            }
+        }
+       
+        for(int i = newSep.length-1; i >= 0; i-=2){
+            String pair;
+            if(!".".equals(newSep[i])){
+                if(i%2 == 0){
+                    if(!tamTek){
+                        pair = newSep[i-1]+ newSep[i];
+                        pairs.remove(i/2-1);
+                        pairs.add(i/2-1, pair);   
+                    }else{
+                        try{
+                            pair = newSep[i-1] + newSep[i];
+                        }catch (ArrayIndexOutOfBoundsException e){
+                            pair = newSep[i];
+                        }
+                        pairs.remove(i/2);
+                        pairs.add(i/2, pair);   
                     }
-                    else if(".".equals(seperated[i+1])){
-                        if(seperated.length == 3){
-                            if(!lonely2) {
-                                String lonePair = seperated[0];
-                                pairs.add(lonePair);
-                                lonely2 = true;
-                            }
-                            
-                            pair1 = seperated[i+2];
-                            pair2 = "0";
-
-                            if (!"".equals(pair1) && !"".equals(pair2)) {
-                                pair = pair1 + pair2;
-                                pairs.add(pair);
-                                break;
-                            }
-                                
-                        }else{
-                            pair1 = seperated[i];
-                            pair2 = seperated[i+2];
-
-                            if(!"".equals(pair1) && !"".equals(pair2)){
-                                pair = pair1 + pair2;
-                                pairs.add(pair);
-                            }
-                        }
-                    }
-                    else{
-
-                        if(!lonely1) {
-                            String lonePair = seperated[0];
-                            pairs.add(lonePair);
-                            lonely1 = true;
-                        }
-
-                        pair1 = seperated[i+1];
-                        pair2 = seperated[i+2];
-
-                        if (!"".equals(pair1) && !"".equals(pair2)) {
-                            pair = pair1 + pair2;
-                            pairs.add(pair);
-                        }
-
-                        if(".".equals(seperated[i+3])){
-                            bitti=true;
-                        }
-
-                        if(bitti) break;
-                    }
-
                 }
-        }   
+                else{
+                    pair = newSep[i-1]+ newSep[i];
+                    pairs.remove((i-1)/2);
+                    pairs.add((i-1)/2, pair);
+                }
+            }
+            else{
+                i++;
+            }
+        }
+        
         return pairs;
     }
 }
