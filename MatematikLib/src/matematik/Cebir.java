@@ -534,7 +534,7 @@ public class Cebir {
         for (double eleman: kume){
             carpim *= eleman;
         }
-        return kok(carpim, 1/kume.length);
+        return kok(carpim, kume.length);
     }
     /**
      * @usage: <ul><li>float[] kume = {1, 5.7, 8.24};
